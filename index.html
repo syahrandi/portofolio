@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Portfolio CRUD Keren</title>
+
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    background: #f4f6f9;
+    color: #2c3e50;
+}
+
+.container {
+    width: 90%;
+    max-width: 900px;
+    margin: 40px auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+h1 {
+    text-align: center;
+    color: #1f3a5f;
+    margin-bottom: 20px;
+}
+
+/* FORM */
+form input, form textarea {
+    width: 100%;
+    margin: 8px 0;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #dcdfe6;
+    background: #f9fafc;
+}
+
+form input:focus, form textarea:focus {
+    border-color: #4a90e2;
+    outline: none;
+    background: #ffffff;
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    padding: 12px;
+    background: #2c3e50;
+    border: none;
+    color: white;
+    font-size: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #34495e;
+}
+
+/* PREVIEW */
+#preview {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    margin-top: 10px;
+    border-radius: 8px;
+}
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-top: 25px;
+}
+
+/* CARD */
+.card {
+    background: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #e6e9ef;
+    transition: 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+}
+
+.card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.card-content {
+    padding: 15px;
+}
+
+.card-content h3 {
+    margin: 0;
+    color: #1f3a5f;
+}
+
+.card-content p {
+    font-size: 14px;
+    color: #555;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    color: white;
+}
+
+.edit {
+    background: #3498db;
+}
+
+.delete {
+    background: #e74c3c;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+    <h1>💼 Portfolio Saya</h1>
+
+    <form id="projectForm">
+        <input type="text" id="title" placeholder="Judul Project" required>
+        <textarea id="description" placeholder="Deskripsi" required></textarea>
+
+        <input type="file" id="image" accept="image/*">
+        <img id="preview" style="display:none;" />
+
+        <button type="submit">Simpan</button>
+    </form>
+
+    <div id="projectList" class="grid"></div>
+</div>
+
+<script>
+let projects = JSON.parse(localStorage.getItem("projects")) || [];
+let editIndex = -1;
+let imageBase64 = "";
+
+const form = document.getElementById("projectForm");
+const list = document.getElementById("projectList");
+const preview = document.getElementById("preview");
+
+// preview gambar
+document.getElementById("image").addEventListener("change", function(e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function() {
+        imageBase64 = reader.result;
+        preview.src = imageBase64;
+        preview.style.display = "block";
+    };
+
+    if (file) reader.readAsDataURL(file);
+});
+
+// render data
+function renderData() {
+    list.innerHTML = "";
+
+    projects.forEach((p, i) => {
+        list.innerHTML += `
+        <div class="card">
+            ${p.image ? `<img src="${p.image}">` : ""}
+            <div class="card-content">
+                <h3>${p.title}</h3>
+                <p>${p.description}</p>
+                <div class="actions">
+                    <span class="btn edit" onclick="editData(${i})">Edit</span>
+                    <span class="btn delete" onclick="deleteData(${i})">Hapus</span>
+                </div>
+            </div>
+        </div>`;
+    });
+
+    localStorage.setItem("projects", JSON.stringify(projects));
+}
+
+// submit
+form.addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const title = document.getElementById("title").value;
+    const description = document.getElementById("description").value;
+
+    const data = {
+        title,
+        description,
+        image: imageBase64
+    };
+
+    if (editIndex === -1) {
+        projects.push(data);
+    } else {
+        projects[editIndex] = data;
+        editIndex = -1;
+    }
+
+    form.reset();
+    preview.style.display = "none";
+    imageBase64 = "";
+
+    renderData();
+});
+
+// edit
+function editData(index) {
+    const p = projects[index];
+
+    document.getElementById("title").value = p.title;
+    document.getElementById("description").value = p.description;
+
+    imageBase64 = p.image;
+    if (p.image) {
+        preview.src = p.image;
+        preview.style.display = "block";
+    }
+
+    editIndex = index;
+}
+
+// delete
+function deleteData(index) {
+    if (confirm("Yakin hapus?")) {
+        projects.splice(index, 1);
+        renderData();
+    }
+}
+
+renderData();
+</script>
+
+</body>
+</html>
