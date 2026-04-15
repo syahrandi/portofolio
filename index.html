@@ -2,30 +2,39 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Portfolio CRUD Keren</title>
+<title>Portfolio CRUD Modern</title>
 
 <style>
+:root {
+    --primary: #6c5ce7;
+    --secondary: #00b894;
+    --danger: #ff7675;
+    --dark: #1e272e;
+    --light: #f5f6fa;
+    --white: #ffffff;
+}
+
 body {
     font-family: 'Segoe UI', sans-serif;
     margin: 0;
-    background: #f4f6f9;
-    color: #2c3e50;
+    background: linear-gradient(135deg, #6c5ce7, #00b894);
+    color: var(--dark);
 }
 
 .container {
     width: 90%;
     max-width: 900px;
     margin: 40px auto;
-    background: #ffffff;
+    background: var(--white);
     padding: 25px;
     border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    border: 2px solid rgba(255,255,255,0.2);
 }
 
 h1 {
     text-align: center;
-    color: #1f3a5f;
-    margin-bottom: 20px;
+    color: var(--primary);
 }
 
 /* FORM */
@@ -35,29 +44,33 @@ form input, form textarea {
     padding: 12px;
     border-radius: 8px;
     border: 1px solid #dcdfe6;
-    background: #f9fafc;
+    background: #f1f2f6;
 }
 
 form input:focus, form textarea:focus {
-    border-color: #4a90e2;
+    border-color: var(--primary);
     outline: none;
     background: #ffffff;
 }
 
 /* BUTTON */
 button {
-    width: 100%;
-    padding: 12px;
-    background: #2c3e50;
+    padding: 10px;
     border: none;
     color: white;
-    font-size: 15px;
     border-radius: 8px;
     cursor: pointer;
+    transition: 0.2s;
+}
+
+button[type="submit"] {
+    width: 100%;
+    background: linear-gradient(135deg, #6c5ce7, #4834d4);
 }
 
 button:hover {
-    background: #34495e;
+    transform: scale(1.03);
+    opacity: 0.95;
 }
 
 /* PREVIEW */
@@ -69,68 +82,110 @@ button:hover {
     border-radius: 8px;
 }
 
-/* GRID */
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px;
-    margin-top: 25px;
-}
-
-/* CARD */
-.card {
-    background: #ffffff;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid #e6e9ef;
-    transition: 0.2s;
-}
-
-.card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
-}
-
-.card img {
+/* TABLE */
+table {
     width: 100%;
-    height: 150px;
-    object-fit: cover;
-}
-
-.card-content {
-    padding: 15px;
-}
-
-.card-content h3 {
-    margin: 0;
-    color: #1f3a5f;
-}
-
-.card-content p {
+    border-collapse: collapse;
+    margin-top: 25px;
     font-size: 14px;
-    color: #555;
 }
 
+thead {
+    background: linear-gradient(135deg, #1e272e, #2f3640);
+    color: white;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e6e9ef;
+}
+
+tbody tr:hover {
+    background: #f1f2f6;
+}
+
+td img {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+/* ACTION BUTTON */
 .actions {
     display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
+    gap: 5px;
 }
 
 .btn {
-    padding: 6px 12px;
+    padding: 5px 10px;
     border-radius: 6px;
     font-size: 12px;
     cursor: pointer;
     color: white;
+    border: none;
 }
 
 .edit {
-    background: #3498db;
+    background: linear-gradient(135deg, #0984e3, #74b9ff);
 }
 
 .delete {
-    background: #e74c3c;
+    background: linear-gradient(135deg, #d63031, #ff7675);
+}
+
+/* MOBILE → CARD MODE */
+@media (max-width: 768px) {
+
+    table, thead, tbody, th, td, tr {
+        display: block;
+        width: 100%;
+    }
+
+    thead {
+        display: none;
+    }
+
+    tbody tr {
+        background: var(--white);
+        margin-bottom: 15px;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        border: 1px solid #e6e9ef;
+    }
+
+    td {
+        border: none;
+        padding: 8px 0;
+    }
+
+    td::before {
+        font-weight: bold;
+        display: block;
+        color: var(--primary);
+        margin-bottom: 3px;
+    }
+
+    td:nth-child(1)::before { content: "Gambar"; }
+    td:nth-child(2)::before { content: "Judul"; }
+    td:nth-child(3)::before { content: "Deskripsi"; }
+    td:nth-child(4)::before { content: "Aksi"; }
+
+    td img {
+        width: 100%;
+        height: auto;
+        margin-top: 5px;
+    }
+
+    .actions {
+        margin-top: 10px;
+    }
+
+    .btn {
+        flex: 1;
+    }
 }
 </style>
 
@@ -150,7 +205,17 @@ button:hover {
         <button type="submit">Simpan</button>
     </form>
 
-    <div id="projectList" class="grid"></div>
+    <table id="projectTable">
+        <thead>
+            <tr>
+                <th>Gambar</th>
+                <th>Judul</th>
+                <th>Deskripsi</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 </div>
 
 <script>
@@ -159,7 +224,6 @@ let editIndex = -1;
 let imageBase64 = "";
 
 const form = document.getElementById("projectForm");
-const list = document.getElementById("projectList");
 const preview = document.getElementById("preview");
 
 // preview gambar
@@ -176,23 +240,24 @@ document.getElementById("image").addEventListener("change", function(e) {
     if (file) reader.readAsDataURL(file);
 });
 
-// render data
+// render
 function renderData() {
-    list.innerHTML = "";
+    const tableBody = document.querySelector("#projectTable tbody");
+    tableBody.innerHTML = "";
 
     projects.forEach((p, i) => {
-        list.innerHTML += `
-        <div class="card">
-            ${p.image ? `<img src="${p.image}">` : ""}
-            <div class="card-content">
-                <h3>${p.title}</h3>
-                <p>${p.description}</p>
+        tableBody.innerHTML += `
+        <tr>
+            <td>${p.image ? `<img src="${p.image}">` : "-"}</td>
+            <td>${p.title}</td>
+            <td>${p.description}</td>
+            <td>
                 <div class="actions">
-                    <span class="btn edit" onclick="editData(${i})">Edit</span>
-                    <span class="btn delete" onclick="deleteData(${i})">Hapus</span>
+                    <button class="btn edit" onclick="editData(${i})">Edit</button>
+                    <button class="btn delete" onclick="deleteData(${i})">Hapus</button>
                 </div>
-            </div>
-        </div>`;
+            </td>
+        </tr>`;
     });
 
     localStorage.setItem("projects", JSON.stringify(projects));
